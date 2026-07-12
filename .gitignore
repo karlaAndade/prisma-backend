@@ -1,0 +1,7 @@
+node_modules/
+prisma.db
+prisma.db-shm
+prisma.db-wal
+.env
+public/uploads/*.webp
+.DS_Store

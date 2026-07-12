@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prisma — Conecta · Expresa · Transforma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E63946;
+  --orange:#F3922B;
+  --yellow:#F5C518;
+  --green:#2FB86E;
+  --blue:#3D8BF2;
+  --purple:#9B51E0;
+  --ink:#1A1523;
+  --ink-soft:#4A4453;
+  --paper:#FBF9F6;
+  --paper-alt:#F1ECE6;
+  --line:#E4DED5;
+  --white:#ffffff;
+  --radius:14px;
+  --shadow: 0 8px 30px rgba(26,21,35,0.08);
+  --prism: linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple));
+}
+*{box-sizing:border-box;}
+body.dark{
+  --paper:#161220;
+  --paper-alt:#1F1A2C;
+  --ink:#F3EFE9;
+  --ink-soft:#C9C2D6;
+  --line:#332C42;
+  --white:#221C31;
+}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Manrope',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  transition:background .3s ease, color .3s ease;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{
+  font-family:'Fraunces',serif;
+  letter-spacing:-0.01em;
+}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+img{max-width:100%;display:block;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+.prism-rule{height:3px;border:none;background:var(--prism);border-radius:3px;opacity:0.9;}
+.prism-text{
+  background:var(--prism);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.eyebrow .dots{display:flex;gap:4px;}
+.eyebrow .dots span{width:5px;height:5px;border-radius:50%;display:inline-block;}
+.eyebrow .dots span:nth-child(1){background:var(--red);}
+.eyebrow .dots span:nth-child(2){background:var(--orange);}
+.eyebrow .dots span:nth-child(3){background:var(--yellow);}
+.eyebrow .dots span:nth-child(4){background:var(--green);}
+.eyebrow .dots span:nth-child(5){background:var(--blue);}
+.eyebrow .dots span:nth-child(6){background:var(--purple);}
+
+/* ---------- HEADER ---------- */
+header.site{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;max-width:1180px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand img{height:42px;width:auto;}
+.brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:20px;letter-spacing:0.01em;}
+nav.mainnav{display:flex;gap:28px;align-items:center;}
+nav.mainnav a{font-size:14px;font-weight:600;color:var(--ink-soft);transition:color .2s;}
+nav.mainnav a:hover{color:var(--ink);}
+.header-actions{display:flex;align-items:center;gap:14px;}
+.icon-btn{
+  position:relative;width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--line);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.icon-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.badge{
+  position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;
+  font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+}
+
+/* ---------- HERO ---------- */
+.hero{padding:64px 0 40px;}
+.hero-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;}
+.hero h1{font-size:52px;line-height:1.04;margin:14px 0 18px;font-weight:600;}
+.hero p.lede{font-size:17px;color:var(--ink-soft);max-width:460px;line-height:1.6;margin-bottom:28px;}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;border-radius:999px;border:none;
+  font-weight:700;font-size:14px;letter-spacing:0.01em;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn-primary{background:var(--ink);color:var(--paper);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.btn-outline{background:transparent;border:1.5px solid var(--ink);color:var(--ink);}
+.btn-outline:hover{background:var(--ink);color:var(--paper);}
+.btn-prism{background:var(--prism);color:#fff;}
+.btn-prism:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;}
+
+.promo-carousel{position:relative;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3;background:var(--paper-alt);}
+.promo-slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:26px;opacity:0;transition:opacity .5s ease;color:#fff;
+}
+.promo-slide.active{opacity:1;}
+.promo-slide::before{content:"";position:absolute;inset:0;background:linear-gradient(0deg, rgba(0,0,0,0.55), rgba(0,0,0,0));}
+.promo-slide .content{position:relative;z-index:2;}
+.promo-slide .tag{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;background:rgba(255,255,255,0.18);padding:4px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.promo-slide h3{font-size:24px;margin:0 0 6px;color:#fff;}
+.promo-slide p{margin:0;font-size:14px;opacity:0.9;}
+.promo-dots{position:absolute;bottom:16px;right:16px;z-index:3;display:flex;gap:6px;}
+.promo-dots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;}
+.promo-dots span.active{background:#fff;}
+
+/* ---------- SECTIONS ---------- */
+section{padding:56px 0;}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;}
+.section-head h2{font-size:30px;margin:6px 0 0;font-weight:600;}
+.see-all{font-size:13px;font-weight:700;border-bottom:2px solid var(--yellow);padding-bottom:2px;}
+
+.rail{display:flex;gap:20px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory;}
+.rail::-webkit-scrollbar{height:6px;}
+.rail::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+
+.card{
+  background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;transition:transform .2s ease, box-shadow .2s ease;cursor:pointer;
+  scroll-snap-align:start;min-width:230px;position:relative;
+}
+.rail .card{width:230px;flex:0 0 auto;}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+.card .imgwrap{aspect-ratio:1/1;overflow:hidden;background:var(--paper-alt);position:relative;}
+.card .imgwrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;}
+.card:hover .imgwrap img{transform:scale(1.06);}
+.card .tag-float{position:absolute;top:10px;left:10px;background:var(--white);font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;box-shadow:var(--shadow);}
+.card .tag-float.out{background:var(--ink);color:var(--paper);}
+.card .tag-float.promo{background:var(--purple);color:#fff;max-width:80%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.promo-note{font-size:11.5px;color:var(--purple);font-weight:700;margin:2px 0 4px;}
+.card-body{padding:14px 16px 16px;}
+.card-body .cat{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;font-family:'Space Mono',monospace;}
+.card-body h4{margin:4px 0 6px;font-size:15.5px;font-weight:600;font-family:'Manrope',sans-serif;}
+.price-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.price{font-family:'Space Mono',monospace;font-weight:700;font-size:16px;}
+.price.strike{color:var(--ink-soft);text-decoration:line-through;font-weight:400;font-size:13px;margin-right:6px;}
+.add-btn{
+  width:34px;height:34px;border-radius:50%;border:none;background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .2s;
+}
+.add-btn:hover{background:var(--purple);}
+.add-btn:disabled{background:var(--line);color:var(--ink-soft);cursor:not-allowed;}
+
+/* contact / footer */
+.contact-band{background:var(--paper-alt);border-radius:20px;padding:36px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center;}
+.contact-list{display:flex;flex-direction:column;gap:10px;font-size:14px;}
+.contact-list b{font-weight:700;}
+footer{padding:32px 0 90px;text-align:center;color:var(--ink-soft);font-size:13px;}
+
+/* floating whatsapp */
+.fab-wa{
+  position:fixed;bottom:24px;right:24px;z-index:50;
+  width:60px;height:60px;border-radius:50%;background:#25D366;color:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(37,211,102,0.5);
+  border:none;font-size:28px;transition:transform .2s;
+}
+.fab-wa:hover{transform:scale(1.08);}
+
+/* ---------- CATALOG ---------- */
+.catalog-toolbar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:28px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;}
+.catalog-toolbar input, .catalog-toolbar select{
+  border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-family:inherit;font-size:14px;background:var(--paper);color:var(--ink);
+}
+.catalog-toolbar input{flex:1;min-width:180px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{
+  padding:7px 14px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;background:var(--white);color:var(--ink-soft);
+}
+.chip.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+/* modal product */
+.overlay{position:fixed;inset:0;background:rgba(20,15,25,0.55);z-index:60;display:none;align-items:center;justify-content:center;padding:24px;}
+.overlay.show{display:flex;}
+.modal{background:var(--white);border-radius:20px;max-width:900px;width:100%;max-height:86vh;overflow:auto;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 30px 80px rgba(0,0,0,0.3);}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--white);border-radius:50%;width:36px;height:36px;border:1px solid var(--line);font-size:18px;z-index:2;}
+.modal-imgzone{position:relative;background:var(--paper-alt);}
+.modal-imgzone img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;}
+.modal-body{padding:32px;position:relative;}
+.modal-body .cat{font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;color:var(--ink-soft);}
+.modal-body h2{margin:8px 0 12px;font-size:28px;}
+.modal-body .desc{color:var(--ink-soft);line-height:1.6;font-size:14.5px;margin-bottom:20px;}
+.qty-row{display:flex;align-items:center;gap:14px;margin:20px 0;}
+.qty-control{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;}
+.qty-control button{width:36px;height:36px;border:none;background:var(--paper);font-size:18px;}
+.qty-control span{width:36px;text-align:center;font-weight:700;font-family:'Space Mono',monospace;}
+.zoom-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:70;display:none;align-items:center;justify-content:center;padding:40px;}
+.zoom-overlay.show{display:flex;}
+.zoom-overlay img{max-height:90vh;max-width:90vw;object-fit:contain;border-radius:8px;}
+
+/* ---------- CART DRAWER ---------- */
+.drawer-overlay{position:fixed;inset:0;background:rgba(20,15,25,0.4);z-index:55;display:none;}
+.drawer-overlay.show{display:block;}
+.drawer{
+  position:fixed;top:0;right:-420px;width:400px;max-width:92vw;height:100%;background:var(--white);
+  z-index:56;box-shadow:-20px 0 60px rgba(0,0,0,0.15);transition:right .3s ease;display:flex;flex-direction:column;
+}
+.drawer.show{right:0;}
+.drawer-head{padding:22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+.drawer-head h3{margin:0;font-size:20px;}
+.drawer-items{flex:1;overflow-y:auto;padding:18px 22px;}
+.cart-line{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);}
+.cart-line img{width:64px;height:64px;border-radius:10px;object-fit:cover;background:var(--paper-alt);}
+.cart-line .info{flex:1;}
+.cart-line .info h5{margin:0 0 4px;font-size:14px;font-weight:700;}
+.cart-line .info .unit{font-size:12px;color:var(--ink-soft);}
+.cart-line .row2{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.mini-qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;}
+.mini-qty button{width:26px;height:26px;border:none;background:transparent;font-size:14px;}
+.mini-qty span{width:22px;text-align:center;font-size:13px;font-weight:700;}
+.remove-x{color:var(--red);font-size:12px;font-weight:700;background:none;border:none;}
+.drawer-foot{padding:22px;border-top:1px solid var(--line);}
+.drawer-foot textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit;font-size:13px;resize:none;margin-bottom:14px;background:var(--paper);color:var(--ink);}
+.total-row{display:flex;justify-content:space-between;font-weight:800;font-size:18px;margin-bottom:14px;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--ink-soft);}
+
+/* ---------- ADMIN ---------- */
+.admin-login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ink);}
+.admin-login-card{background:var(--paper);border-radius:20px;padding:44px;width:100%;max-width:380px;box-shadow:0 30px 80px rgba(0,0,0,0.4);}
+.admin-login-card img{height:46px;margin:0 auto 14px;display:block;}
+.admin-login-card h2{text-align:center;font-size:22px;margin:0 0 4px;}
+.admin-login-card p{text-align:center;color:var(--ink-soft);font-size:13px;margin:0 0 26px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;}
+.field input, .field select, .field textarea{
+  width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:14px;background:var(--white);color:var(--ink);
+}
+.field textarea{resize:vertical;min-height:70px;}
+.login-error{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none;}
+.hint-demo{margin-top:18px;text-align:center;font-size:11.5px;color:var(--ink-soft);background:var(--paper-alt);padding:10px;border-radius:10px;}
+
+.admin-shell{display:none;min-height:100vh;background:var(--paper-alt);}
+.admin-shell.show{display:flex;}
+.admin-sidebar{width:230px;background:var(--ink);color:var(--paper);flex-shrink:0;padding:22px 14px;display:flex;flex-direction:column;}
+.admin-sidebar .brand{color:var(--paper);margin-bottom:24px;padding:0 8px;}
+.admin-sidebar .brand-name{color:var(--paper);}
+.admin-nav-item{
+  display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:600;
+  color:rgba(255,255,255,0.65);margin-bottom:2px;transition:background .15s;
+}
+.admin-nav-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
+.admin-nav-item.active{background:rgba(255,255,255,0.12);color:#fff;}
+.admin-nav-item .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.admin-logout{margin-top:auto;padding:11px 12px;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;}
+.admin-main{flex:1;padding:30px 36px;overflow-y:auto;max-height:100vh;}
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;}
+.admin-topbar h1{font-size:24px;margin:0;}
+.admin-panel{display:none;}
+.admin-panel.show{display:block;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px;}
+.kpi-card{background:var(--white);border-radius:14px;padding:18px 20px;border:1px solid var(--line);}
+.kpi-card .label{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.05em;font-family:'Space Mono',monospace;}
+.kpi-card .value{font-size:26px;font-weight:700;margin-top:6px;font-family:'Fraunces',serif;}
+.kpi-card.g1{border-top:3px solid var(--red);}
+.kpi-card.g2{border-top:3px solid var(--orange);}
+.kpi-card.g3{border-top:3px solid var(--green);}
+.kpi-card.g4{border-top:3px solid var(--blue);}
+
+.panel-card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:20px;}
+.panel-card h3{margin:0 0 16px;font-size:17px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{text-align:left;padding:10px 8px;color:var(--ink-soft);font-size:11.5px;text-transform:uppercase;letter-spacing:0.04em;border-bottom:2px solid var(--line);font-family:'Space Mono',monospace;}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.mini-thumb{width:38px;height:38px;border-radius:8px;object-fit:cover;background:var(--paper-alt);}
+.pill{padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700;display:inline-block;}
+.pill.on{background:rgba(47,184,110,0.15);color:var(--green);}
+.pill.off{background:rgba(230,57,70,0.12);color:var(--red);}
+.pill.low{background:rgba(243,146,43,0.15);color:var(--orange);}
+.pill.neutral{background:var(--paper-alt);color:var(--ink-soft);}
+.tbl-actions{display:flex;gap:8px;}
+.tbl-actions button{border:1px solid var(--line);background:var(--white);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;}
+.tbl-actions button.danger{color:var(--red);border-color:rgba(230,57,70,0.3);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-actions{display:flex;gap:10px;margin-top:6px;}
+.small-note{font-size:12px;color:var(--ink-soft);margin-top:6px;}
+.imgpick-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.imgpick-row img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);}
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:160px;padding-top:10px;}
+.bar-chart .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.bar-chart .bar{width:100%;border-radius:6px 6px 0 0;background:var(--prism);}
+.bar-chart .bar-label{font-size:10.5px;color:var(--ink-soft);margin-top:6px;font-family:'Space Mono',monospace;}
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--ink);color:var(--paper);padding:14px 24px;border-radius:999px;font-size:13.5px;font-weight:600;
+  z-index:100;transition:transform .3s ease;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast .dot{width:8px;height:8px;border-radius:50%;background:var(--green);}
+
+.color-swatches{display:flex;gap:10px;margin-top:6px;}
+.swatch{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
+.swatch.selected{border-color:var(--ink);}
+
+.view{display:none;}
+.view.show{display:block;}
+
+@media (max-width: 900px){
+  .hero-grid{grid-template-columns:1fr;}
+  .grid{grid-template-columns:repeat(2,1fr);}
+  nav.mainnav{display:none;}
+  .contact-band{grid-template-columns:1fr;}
+  .modal{grid-template-columns:1fr;}
+  .admin-shell.show{flex-direction:column;}
+  .admin-sidebar{width:100%;flex-direction:row;overflow-x:auto;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .two-col{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ CUSTOMER SITE ============ -->
+<div id="view-site" class="view show">
+
+  <header class="site">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="/logo.png" alt="Prisma">
+        <span class="brand-name">Prisma</span>
+      </div>
+      <nav class="mainnav">
+        <a href="#" data-nav="home">Inicio</a>
+        <a href="#" data-nav="catalog">Catálogo</a>
+        <a href="#contacto-section">Contacto</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" id="darkToggle" title="Modo oscuro">🌙</button>
+        <button class="icon-btn" id="cartOpenBtn" title="Carrito">
+          🛍️
+          <span class="badge" id="cartBadge" style="display:none;">0</span>
+        </button>
+        <a class="icon-btn" href="#" data-nav="adminlogin" title="Panel admin" style="font-size:15px;">🔒</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ---- HOME ---- -->
+  <div id="page-home">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow"><span class="dots"><span></span><span></span><span></span><span></span><span></span><span></span></span> Conecta · Expresa · Transforma</div>
+          <h1>Cada pieza cuenta<br>una parte tuya.</h1>
+          <p class="lede">Descubrí el catálogo de Prisma: productos pensados para acompañar tu estilo, con pedidos directos por WhatsApp, sin vueltas.</p>
+          <div class="btn-row">
+            <button class="btn btn-primary" data-nav="catalog">Ver catálogo →</button>
+            <button class="btn btn-outline" id="heroWaBtn">Escribir por WhatsApp</button>
+          </div>
+        </div>
+        <div class="promo-carousel" id="promoCarousel"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Selección</div>
+            <h2>Destacados</h2>
+          </div>
+          <a class="see-all" data-nav="catalog">Ver todo →</a>
+        </div>
+        <div class="rail" id="railDestacados"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Recién llegados</div>
+            <h2>Novedades</h2>
+          </div>
+          <a class="see-all" data-nav="catalog">Ver todo →</a>
+        </div>
+        <div class="rail" id="railNuevos"></div>
+      </div>
+    </section>
+
+    <section id="contacto-section">
+      <div class="wrap">
+        <div class="contact-band">
+          <div>
+            <div class="eyebrow">Encontranos</div>
+            <h2 style="margin:8px 0 16px;">Hablemos</h2>
+            <p style="color:var(--ink-soft);max-width:420px;line-height:1.6;">¿Tenés dudas sobre un producto o querés hacer un pedido especial? Escribinos directo, respondemos rápido.</p>
+          </div>
+          <div class="contact-list" id="contactInfo"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ---- CATALOG ---- -->
+  <div id="page-catalog" style="display:none;">
+    <section style="padding-top:36px;">
+      <div class="wrap">
+        <div class="eyebrow">Catálogo completo</div>
+        <h2 style="margin:8px 0 26px;font-size:32px;">Todos los productos</h2>
+        <div class="catalog-toolbar">
+          <input type="text" id="searchInput" placeholder="Buscar productos...">
+          <select id="sortSelect">
+            <option value="relevance">Ordenar por: Relevancia</option>
+            <option value="price_asc">Precio: menor a mayor</option>
+            <option value="price_desc">Precio: mayor a menor</option>
+            <option value="newest">Más nuevos primero</option>
+          </select>
+        </div>
+        <div class="chips" id="categoryChips" style="margin-bottom:26px;"></div>
+        <div class="grid" id="catalogGrid"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <hr class="prism-rule" style="margin-bottom:20px;">
+      <p>© 2026 Prisma — Conecta · Expresa · Transforma</p>
+    </div>
+  </footer>
+
+  <button class="fab-wa" id="fabWaBtn" title="Escribinos por WhatsApp">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.68 2 12.04 2ZM12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.08 16.3C4.24 15 3.8 13.47 3.8 11.91C3.8 7.37 7.5 3.67 12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.71 20.28 11.91C20.27 16.46 16.58 20.15 12.04 20.15ZM16.56 13.99C16.31 13.87 15.11 13.27 14.88 13.19C14.65 13.1 14.48 13.06 14.31 13.31C14.14 13.56 13.66 14.13 13.51 14.3C13.36 14.47 13.21 14.49 12.96 14.37C12.71 14.25 11.92 13.99 10.99 13.16C10.26 12.51 9.77 11.71 9.62 11.46C9.47 11.21 9.6 11.08 9.72 10.96C9.83 10.85 9.97 10.67 10.1 10.52C10.23 10.37 10.27 10.27 10.36 10.1C10.45 9.93 10.4 9.78 10.34 9.66C10.28 9.54 9.79 8.34 9.58 7.85C9.38 7.37 9.17 7.44 9.02 7.43C8.87 7.42 8.7 7.42 8.53 7.42C8.36 7.42 8.09 7.48 7.86 7.73C7.63 7.98 6.99 8.58 6.99 9.78C6.99 10.98 7.88 12.14 8 12.31C8.12 12.48 9.77 15.03 12.3 16.09C12.9 16.34 13.37 16.49 13.74 16.6C14.34 16.79 14.89 16.76 15.32 16.7C15.8 16.63 16.81 16.09 17.02 15.5C17.23 14.91 17.23 14.41 17.17 14.3C17.11 14.19 16.94 14.13 16.69 14.01L16.56 13.99Z"/></svg>
+  </button>
+
+  <!-- product modal -->
+  <div class="overlay" id="productOverlay">
+    <div class="modal" id="productModal" style="position:relative;">
+      <button class="modal-close" id="closeModalBtn">✕</button>
+      <div class="modal-imgzone">
+        <img id="modalImg" src="" alt="">
+      </div>
+      <div class="modal-body">
+        <div class="cat" id="modalCat"></div>
+        <h2 id="modalName"></h2>
+        <div id="modalAvail"></div>
+        <p class="desc" id="modalDesc"></p>
+        <div class="price-row">
+          <span class="price" id="modalPrice"></span>
+        </div>
+        <div class="qty-row">
+          <span style="font-size:13px;font-weight:600;color:var(--ink-soft);">Cantidad</span>
+          <div class="qty-control">
+            <button id="modalQtyMinus">−</button>
+            <span id="modalQtyVal">1</span>
+            <button id="modalQtyPlus">+</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="modalAddBtn" style="width:100%;justify-content:center;">Agregar al pedido</button>
+      </div>
+    </div>
+  </div>
+  <div class="zoom-overlay" id="zoomOverlay">
+    <img id="zoomImg" src="">
+  </div>
+
+  <!-- cart drawer -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="cartDrawer">
+    <div class="drawer-head">
+      <h3>Tu pedido</h3>
+      <button class="modal-close" id="closeDrawerBtn" style="position:static;">✕</button>
+    </div>
+    <div class="drawer-items" id="drawerItems"></div>
+    <div class="drawer-foot">
+      <textarea id="orderNote" placeholder="Observaciones (dirección, referencia, horario de entrega...)"></textarea>
+      <div class="total-row"><span>Total</span><span id="cartTotal">$0.00</span></div>
+      <button class="btn" style="width:100%;justify-content:center;background:#25D366;color:#fff;" id="sendWaBtn">Enviar pedido por WhatsApp</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Listo</span></div>
+</div>
+
+<!-- ============ ADMIN LOGIN ============ -->
+<div id="view-adminlogin" class="view">
+  <div class="admin-login-wrap">
+    <div class="admin-login-card">
+      <img src="/logo.png" alt="Prisma">
+      <h2>Panel administrador</h2>
+      <p>Acceso privado — solo personal autorizado</p>
+      <div class="field">
+        <label>Usuario</label>
+        <input type="text" id="loginUser" placeholder="admin">
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" id="loginPass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" id="loginBtn">Ingresar</button>
+      <p class="login-error" id="loginError">Usuario o contraseña incorrectos.</p>
+      <div class="hint-demo">Demo: usuario <b>admin</b> · contraseña <b>prisma2026</b></div>
+      <p style="text-align:center;margin-top:18px;"><a href="#" data-nav="home" style="font-size:13px;color:var(--ink-soft);">← Volver al catálogo</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN DASHBOARD ============ -->
+<div id="view-admin" class="view">
+  <div class="admin-shell show" id="adminShell">
+    <div class="admin-sidebar">
+      <div class="brand"><img src="/logo.png" style="height:34px;"><span class="brand-name">Prisma</span></div>
+      <div class="admin-nav-item active" data-panel="dashboard"><span class="dot" style="background:var(--red);"></span>Resumen</div>
+      <div class="admin-nav-item" data-panel="productos"><span class="dot" style="background:var(--orange);"></span>Productos</div>
+      <div class="admin-nav-item" data-panel="promociones"><span class="dot" style="background:var(--yellow);"></span>Promociones</div>
+      <div class="admin-nav-item" data-panel="inventario"><span class="dot" style="background:var(--green);"></span>Inventario</div>
+      <div class="admin-nav-item" data-panel="compras"><span class="dot" style="background:var(--blue);"></span>Compras</div>
+      <div class="admin-nav-item" data-panel="ventas"><span class="dot" style="background:var(--purple);"></span>Ventas</div>
+      <div class="admin-nav-item" data-panel="finanzas"><span class="dot" style="background:var(--red);"></span>Finanzas</div>
+      <div class="admin-nav-item" data-panel="clientes"><span class="dot" style="background:var(--orange);"></span>Clientes</div>
+      <div class="admin-nav-item" data-panel="estadisticas"><span class="dot" style="background:var(--yellow);"></span>Estadísticas</div>
+      <div class="admin-nav-item" data-panel="configuracion"><span class="dot" style="background:var(--green);"></span>Configuración</div>
+      <div class="admin-logout" id="logoutBtn">← Cerrar sesión</div>
+    </div>
+    <div class="admin-main" id="adminMain"></div>
+  </div>
+</div>
+
+
+<script src="app.js"></script>
+</body>
+</html>
