@@ -1,7 +1,6 @@
-// routes/products.js
 const express = require('express');
 const db = require('../db/database');
-const { requireAdmin } = require('../middleware/auth');
+const { requireAdmin, checkAdminIfAll } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -10,8 +9,8 @@ function mapProduct(p) {
     id: p.id,
     name: p.name,
     category: p.category,
-    price: p.price,
-    oldPrice: p.old_price,
+    price: Number(p.price),
+    oldPrice: Number(p.old_price),
     stock: p.stock,
     active: !!p.active,
     featured: !!p.featured,
@@ -21,70 +20,122 @@ function mapProduct(p) {
   };
 }
 
-// GET /api/products -> lista pública (solo activos) o todos si es admin (?all=1, requiere token)
-router.get('/', (req, res, next) => {
-  if (req.query.all) return requireAdmin(req, res, next);
-  next();
-}, (req, res) => {
-  const rows = req.query.all
-    ? db.prepare('SELECT * FROM products ORDER BY created_at DESC').all()
-    : db.prepare('SELECT * FROM products WHERE active = 1 ORDER BY created_at DESC').all();
-  res.json(rows.map(mapProduct));
+// Obtener productos
+router.get('/', async (req, res) => {
+  if (!checkAdminIfAll(req, res)) return;
+
+  try {
+    const sql = req.query.all
+      ? 'SELECT * FROM products ORDER BY created_at DESC'
+      : 'SELECT * FROM products WHERE active = 1 ORDER BY created_at DESC';
+
+    const result = await db.query(sql);
+    res.json(result.rows.map(mapProduct));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.get('/:id', (req, res) => {
-  const p = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
-  if (!p) return res.status(404).json({ error: 'Producto no encontrado.' });
-  res.json(mapProduct(p));
-});
+// Crear producto
+router.post('/', requireAdmin, async (req, res) => {
+  try {
+    const {
+      name, category, price, oldPrice, stock,
+      description, images, active, featured, isNew
+    } = req.body;
 
-router.post('/', requireAdmin, (req, res) => {
-  const { name, category, price, oldPrice, stock, description, images, active, featured, isNew } = req.body;
-  const info = db.prepare(`INSERT INTO products
-    (name, category, price, old_price, stock, active, featured, is_new, description, image_url)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .run(name, category, price || 0, oldPrice || 0, stock || 0, active ? 1 : 0, featured ? 1 : 0, isNew ? 1 : 0, description || '', (images && images[0]) || '');
-  const p = db.prepare('SELECT * FROM products WHERE id = ?').get(info.lastInsertRowid);
-  res.status(201).json(mapProduct(p));
-});
-
-router.put('/:id', requireAdmin, (req, res) => {
-  const { name, category, price, oldPrice, stock, description, images, active, featured, isNew } = req.body;
-  const existing = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Producto no encontrado.' });
-
-  db.prepare(`UPDATE products SET name=?, category=?, price=?, old_price=?, stock=?, active=?, featured=?, is_new=?, description=?, image_url=? WHERE id=?`)
-    .run(
-      name ?? existing.name,
-      category ?? existing.category,
-      price ?? existing.price,
-      oldPrice ?? existing.old_price,
-      stock ?? existing.stock,
-      active !== undefined ? (active ? 1 : 0) : existing.active,
-      featured !== undefined ? (featured ? 1 : 0) : existing.featured,
-      isNew !== undefined ? (isNew ? 1 : 0) : existing.is_new,
-      description ?? existing.description,
-      (images && images[0]) || existing.image_url,
-      req.params.id
+    const result = await db.query(
+      `INSERT INTO products
+      (name,category,price,old_price,stock,active,featured,is_new,description,image_url)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      RETURNING *`,
+      [
+        name,
+        category,
+        price || 0,
+        oldPrice || 0,
+        stock || 0,
+        active ? 1 : 0,
+        featured ? 1 : 0,
+        isNew ? 1 : 0,
+        description || '',
+        (images && images[0]) || ''
+      ]
     );
-  const p = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
-  res.json(mapProduct(p));
+
+    res.status(201).json(mapProduct(result.rows[0]));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.patch('/:id/stock', requireAdmin, (req, res) => {
-  const { delta } = req.body; // +1 o -1
-  const p = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
-  if (!p) return res.status(404).json({ error: 'Producto no encontrado.' });
-  const newStock = Math.max(0, p.stock + delta);
-  db.prepare('UPDATE products SET stock = ? WHERE id = ?').run(newStock, req.params.id);
-  db.prepare('INSERT INTO inventory_log (fecha, producto, movimiento) VALUES (?, ?, ?)')
-    .run(new Date().toISOString().slice(0,10), p.name, `${delta > 0 ? '+' : ''}${delta} unidad (ajuste manual)`);
-  res.json(mapProduct(db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id)));
+// Actualizar producto
+router.put('/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await db.query(
+      `UPDATE products SET
+      name=$1, category=$2, price=$3, old_price=$4, stock=$5,
+      active=$6, featured=$7, is_new=$8, description=$9, image_url=$10
+      WHERE id=$11
+      RETURNING *`,
+      [
+        req.body.name,
+        req.body.category,
+        req.body.price,
+        req.body.oldPrice,
+        req.body.stock,
+        req.body.active ? 1 : 0,
+        req.body.featured ? 1 : 0,
+        req.body.isNew ? 1 : 0,
+        req.body.description || '',
+        (req.body.images && req.body.images[0]) || '',
+        req.params.id
+      ]
+    );
+
+    if (result.rows.length === 0)
+      return res.status(404).json({ error: 'Producto no encontrado' });
+
+    res.json(mapProduct(result.rows[0]));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.delete('/:id', requireAdmin, (req, res) => {
-  db.prepare('DELETE FROM products WHERE id = ?').run(req.params.id);
-  res.json({ ok: true });
+// Cambiar stock
+router.patch('/:id/stock', requireAdmin, async (req, res) => {
+  try {
+    const { delta } = req.body;
+
+    const producto = await db.query('SELECT * FROM products WHERE id=$1', [req.params.id]);
+    if (producto.rows.length === 0)
+      return res.status(404).json({ error: 'Producto no encontrado' });
+
+    const p = producto.rows[0];
+    const nuevoStock = Math.max(0, p.stock + delta);
+
+    await db.query('UPDATE products SET stock=$1 WHERE id=$2', [nuevoStock, req.params.id]);
+
+    await db.query(
+      `INSERT INTO inventory_log (fecha,producto,movimiento) VALUES($1,$2,$3)`,
+      [new Date().toISOString().slice(0, 10), p.name, `${delta > 0 ? '+' : ''}${delta} unidad`]
+    );
+
+    const actualizado = await db.query('SELECT * FROM products WHERE id=$1', [req.params.id]);
+    res.json(mapProduct(actualizado.rows[0]));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Eliminar
+router.delete('/:id', requireAdmin, async (req, res) => {
+  try {
+    await db.query('DELETE FROM products WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;

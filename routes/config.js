@@ -1,25 +1,99 @@
 // routes/config.js
+
 const express = require('express');
 const db = require('../db/database');
 const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const rows = db.prepare('SELECT * FROM config').all();
-  const cfg = {};
-  rows.forEach(r => cfg[r.key] = r.value);
-  res.json(cfg);
+
+// Obtener configuración
+router.get('/', async (req, res) => {
+
+  try {
+
+    const result = await db.query(
+      'SELECT * FROM config'
+    );
+
+
+    const cfg = {};
+
+    result.rows.forEach(r => {
+      cfg[r.key] = r.value;
+    });
+
+
+    res.json(cfg);
+
+
+  } catch(error) {
+
+    res.status(500).json({
+      error: error.message
+    });
+
+  }
+
 });
 
-router.put('/', requireAdmin, (req, res) => {
-  const upsert = db.prepare(`INSERT INTO config (key, value) VALUES (?, ?)
-    ON CONFLICT(key) DO UPDATE SET value = excluded.value`);
-  Object.entries(req.body).forEach(([k, v]) => upsert.run(k, String(v)));
-  const rows = db.prepare('SELECT * FROM config').all();
-  const cfg = {};
-  rows.forEach(r => cfg[r.key] = r.value);
-  res.json(cfg);
+
+
+// Actualizar configuración
+router.put('/', requireAdmin, async (req, res) => {
+
+  try {
+
+
+    for (const [key, value] of Object.entries(req.body)) {
+
+
+      await db.query(
+      `
+      INSERT INTO config(key,value)
+      VALUES($1,$2)
+      ON CONFLICT(key)
+      DO UPDATE SET value = EXCLUDED.value
+      `,
+      [
+        key,
+        String(value)
+      ]
+      );
+
+
+    }
+
+
+
+    const result = await db.query(
+      'SELECT * FROM config'
+    );
+
+
+    const cfg = {};
+
+    result.rows.forEach(r => {
+      cfg[r.key] = r.value;
+    });
+
+
+    res.json(cfg);
+
+
+
+  } catch(error) {
+
+
+    res.status(500).json({
+      error:error.message
+    });
+
+
+  }
+
+
 });
+
 
 module.exports = router;

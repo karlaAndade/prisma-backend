@@ -1,6 +1,6 @@
 // routes/purchases.js
 const express = require('express');
-const db = require('../db/database');
+const db = require('../db/database-sqlite');
 const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();

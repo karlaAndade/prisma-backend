@@ -7,7 +7,6 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const db = require('./database');
-
 function seed() {
   const adminCount = db.prepare('SELECT COUNT(*) AS c FROM admins').get().c;
   if (adminCount === 0) {
