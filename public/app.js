@@ -1158,10 +1158,12 @@ async function init(){
   renderCategoryChips();
   renderCatalogGrid();
   renderCart();
-  showView('home');
-
-  if(token){
-    // sesión de admin recordada: validamos entrando directo si el usuario navega a /admin
+  if(window.location.hash === '#admin'){
+    if(token){ showView('admin'); await enterAdmin(); }
+    else { showView('adminlogin'); }
+  } else {
+    showView('home');
   }
 }
 init();
+
