@@ -1,6 +1,5 @@
 // server.js
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -13,9 +12,7 @@ if (!isProduction) {
     // Solo en tu compu: inicializa SQLite y siembra datos si es la primera vez
     const dbFile = path.join(__dirname, 'prisma.db');
     const isFirstRun = !fs.existsSync(dbFile);
-
     require('./db/database-sqlite');
-
     if (isFirstRun) {
         console.log('🌱 Primera ejecución...');
         require('./db/seed');
@@ -25,7 +22,16 @@ if (!isProduction) {
 const app = express();
 
 app.use(cors());
-app.use(helmet());
+
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "img-src": ["'self'", "data:", "https:"],
+        },
+    },
+}));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
